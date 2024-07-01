@@ -1,13 +1,15 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    kotlin("jvm") version "1.9.0"
-    kotlin("plugin.serialization") version "1.9.0"
-    id("fabric-loom") version "1.3-SNAPSHOT"
-    id("io.github.juuxel.loom-vineflower") version "1.11.0"
+    kotlin("jvm") version "2.0.0"
+    id("fabric-loom") version "1.7-SNAPSHOT"
 }
 
 version = property("mod_version")!!.toString()
 val fabricKotlinVersion = property("fabric_kotlin_version")!!
 val modMenuVersion = property("mod_menu_version")!!
+val mcVersion = property("minecraft_version")!!
+val loaderVersion = property("loader_version")!!
 
 base {
     archivesName.set(property("archives_base_name") as String)
@@ -38,23 +40,27 @@ tasks {
         inputs.property("version", project.version)
         inputs.property("fabric_kotlin_version", fabricKotlinVersion)
         inputs.property("mod_menu_version", modMenuVersion)
+        inputs.property("minecraft_version", mcVersion)
+        inputs.property("loader_version", loaderVersion)
 
         filesMatching("fabric.mod.json") {
             expand(
                 "version" to project.version,
                 "fabric_kotlin_version" to fabricKotlinVersion,
                 "mod_menu_version" to modMenuVersion,
+                "minecraft_version" to mcVersion,
+                "loader_version" to loaderVersion,
             )
         }
     }
 
     withType<JavaCompile>().configureEach {
-        options.release.set(17)
+        options.release.set(21)
     }
 
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
         }
     }
 
@@ -68,6 +74,6 @@ tasks {
 java {
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
